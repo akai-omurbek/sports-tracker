@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import ExercisePicker from './ExercisePicker';
 import { nowTime, todayDate } from '../constants';
 import './TemplatesTab.css';
@@ -26,7 +26,7 @@ function LogWorkoutModal({ template, exercises, onLog, onClose }) {
     setLogging(true);
     try {
       await Promise.all(valid.map(r =>
-        axios.post('/api/activities', {
+        api.post('/api/activities', {
           type: 'Strength Training',
           name: r.exerciseName,
           date, time,

@@ -1,8 +1,15 @@
 import React, { useState, useMemo, useRef } from 'react';
-import axios from 'axios';
+import api from '../api';
 import './ProgressTab.css';
 
-const API_PHOTO = 'http://localhost:3001/photos';
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -91,7 +98,7 @@ function CheckpointModal({ existing, onSave, onClose }) {
     notes:   existing?.notes   || '',
   });
   const [photoFile, setPhotoFile] = useState(null);
-  const [preview, setPreview] = useState(existing?.photo ? `${API_PHOTO}/${existing.photo}` : null);
+  const [preview, setPreview] = useState(existing?.photo || null);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef();
 
@@ -114,14 +121,15 @@ function CheckpointModal({ existing, onSave, onClose }) {
 
     setSaving(true);
     try {
-      const fd = new FormData();
-      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-      if (photoFile) fd.append('photo', photoFile);
-
+      const body = { ...form };
+      if (photoFile) {
+        body.photoData = await fileToBase64(photoFile);
+        body.photoMime = photoFile.type;
+      }
       if (isEdit) {
-        await axios.put(`/api/checkpoints/${existing.id}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+        await api.put(`/api/checkpoints/${existing.id}`, body);
       } else {
-        await axios.post('/api/checkpoints', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+        await api.post('/api/checkpoints', body);
       }
       onSave();
     } catch (err) {
@@ -232,7 +240,7 @@ function CheckpointCard({ cp, height, onEdit, onDelete, onPhotoClick }) {
   return (
     <div className="cp-card">
       <div className="cp-photo-wrap" onClick={() => onPhotoClick(cp)}>
-        <img src={`${API_PHOTO}/${cp.photo}`} alt={cp.date} className="cp-photo" />
+        <img src={cp.photo} alt={cp.date} className="cp-photo" />
         <div className="cp-photo-overlay">🔍 View</div>
       </div>
       <div className="cp-body">
@@ -271,7 +279,7 @@ function Lightbox({ cp, onClose }) {
   return (
     <div className="lightbox-overlay" onClick={onClose}>
       <img
-        src={`${API_PHOTO}/${cp.photo}`}
+        src={cp.photo}
         alt={cp.date}
         className="lightbox-img"
         onClick={e => e.stopPropagation()}
@@ -330,8 +338,8 @@ function CompareView({ checkpoints, height }) {
       </div>
 
       <div className="compare-photos">
-        {left  && <div className="compare-photo-block"><img src={`${API_PHOTO}/${left.photo}`}  alt="before" /><span>{new Date(left.date  + 'T12:00:00').toLocaleDateString('en', dateOpts)}</span></div>}
-        {right && <div className="compare-photo-block"><img src={`${API_PHOTO}/${right.photo}`} alt="after"  /><span>{new Date(right.date + 'T12:00:00').toLocaleDateString('en', dateOpts)}</span></div>}
+        {left  && <div className="compare-photo-block"><img src={left.photo}  alt="before" /><span>{new Date(left.date  + 'T12:00:00').toLocaleDateString('en', dateOpts)}</span></div>}
+        {right && <div className="compare-photo-block"><img src={right.photo} alt="after"  /><span>{new Date(right.date + 'T12:00:00').toLocaleDateString('en', dateOpts)}</span></div>}
       </div>
 
       {(left || right) && (
@@ -400,7 +408,7 @@ export default function ProgressTab({ checkpoints, profile, onRefresh, onProfile
 
   async function handleDelete(id) {
     if (!window.confirm('Delete this checkpoint?')) return;
-    await axios.delete(`/api/checkpoints/${id}`);
+    await api.delete(`/api/checkpoints/${id}`);
     onRefresh();
   }
 

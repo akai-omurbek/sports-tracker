@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from './api';
 import Dashboard from './components/Dashboard';
 import AddWorkout from './components/AddWorkout';
-import GoogleFitSync from './components/GoogleFitSync';
 import Activities from './components/Activities';
 import ExercisesTab from './components/ExercisesTab';
 import ProgressTab from './components/ProgressTab';
@@ -22,7 +21,6 @@ export default function App() {
   const [tab, setTab] = useState('dashboard');
   const [activities, setActivities] = useState([]);
   const [exercises, setExercises] = useState([]);
-  const [accessToken, setAccessToken] = useState(() => localStorage.getItem('accessToken') || null);
   const [editingActivity, setEditingActivity] = useState(null);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
   const [checkpoints, setCheckpoints] = useState([]);
@@ -40,58 +38,39 @@ export default function App() {
     fetchCheckpoints();
     fetchProfile();
     fetchTemplates();
-    checkAuthFromURL();
   }, []);
 
   async function fetchActivities() {
     try {
-      const { data } = await axios.get('/api/activities');
+      const { data } = await api.get('/api/activities');
       setActivities(data || []);
     } catch (e) { console.error(e); }
   }
 
   async function fetchExercises() {
     try {
-      const { data } = await axios.get('/api/exercises');
+      const { data } = await api.get('/api/exercises');
       setExercises(data || []);
-    } catch (e) { console.error(e); }
-  }
-
-  function checkAuthFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    if (code) {
-      exchangeAuthCode(code);
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }
-
-  async function exchangeAuthCode(code) {
-    try {
-      const { data } = await axios.post('/api/auth/exchange-code', { code });
-      setAccessToken(data.access_token);
-      localStorage.setItem('accessToken', data.access_token);
-      if (data.refresh_token) localStorage.setItem('refreshToken', data.refresh_token);
     } catch (e) { console.error(e); }
   }
 
   async function handleAddWorkout(workout) {
     try {
-      const { data } = await axios.post('/api/activities', workout);
+      const { data } = await api.post('/api/activities', workout);
       setActivities(prev => [...prev, data]);
     } catch (e) { console.error(e); }
   }
 
   async function handleDeleteActivity(id) {
     try {
-      await axios.delete(`/api/activities/${id}`);
+      await api.delete(`/api/activities/${id}`);
       setActivities(prev => prev.filter(a => a.id !== id));
     } catch (e) { console.error(e); }
   }
 
   async function handleSaveEdit(updated) {
     try {
-      const { data } = await axios.put(`/api/activities/${updated.id}`, updated);
+      const { data } = await api.put(`/api/activities/${updated.id}`, updated);
       setActivities(prev => prev.map(a => a.id === data.id ? data : a));
       setEditingActivity(null);
     } catch (e) { console.error(e); }
@@ -99,56 +78,56 @@ export default function App() {
 
   async function handleAddExercise(exData) {
     try {
-      const { data } = await axios.post('/api/exercises', exData);
+      const { data } = await api.post('/api/exercises', exData);
       setExercises(prev => [...prev, data]);
     } catch (e) { console.error(e); }
   }
 
   async function handleEditExercise(id, exData) {
     try {
-      const { data } = await axios.put(`/api/exercises/${id}`, exData);
+      const { data } = await api.put(`/api/exercises/${id}`, exData);
       setExercises(prev => prev.map(e => e.id === id ? data : e));
     } catch (e) { console.error(e); }
   }
 
   async function fetchCheckpoints() {
-    try { const { data } = await axios.get('/api/checkpoints'); setCheckpoints(data || []); }
+    try { const { data } = await api.get('/api/checkpoints'); setCheckpoints(data || []); }
     catch (e) { console.error(e); }
   }
 
   async function fetchProfile() {
-    try { const { data } = await axios.get('/api/profile'); setProfile(data || {}); }
+    try { const { data } = await api.get('/api/profile'); setProfile(data || {}); }
     catch (e) { console.error(e); }
   }
 
   async function fetchTemplates() {
-    try { const { data } = await axios.get('/api/templates'); setTemplates(data || []); }
+    try { const { data } = await api.get('/api/templates'); setTemplates(data || []); }
     catch (e) { console.error(e); }
   }
 
   async function handleAddTemplate(t) {
-    try { const { data } = await axios.post('/api/templates', t); setTemplates(prev => [...prev, data]); }
+    try { const { data } = await api.post('/api/templates', t); setTemplates(prev => [...prev, data]); }
     catch (e) { console.error(e); }
   }
 
   async function handleEditTemplate(id, t) {
-    try { const { data } = await axios.put(`/api/templates/${id}`, t); setTemplates(prev => prev.map(x => x.id === id ? data : x)); }
+    try { const { data } = await api.put(`/api/templates/${id}`, t); setTemplates(prev => prev.map(x => x.id === id ? data : x)); }
     catch (e) { console.error(e); }
   }
 
   async function handleDeleteTemplate(id) {
-    try { await axios.delete(`/api/templates/${id}`); setTemplates(prev => prev.filter(x => x.id !== id)); }
+    try { await api.delete(`/api/templates/${id}`); setTemplates(prev => prev.filter(x => x.id !== id)); }
     catch (e) { console.error(e); }
   }
 
   async function handleProfileSave(updates) {
-    try { const { data } = await axios.put('/api/profile', updates); setProfile(data); }
+    try { const { data } = await api.put('/api/profile', updates); setProfile(data); }
     catch (e) { console.error(e); }
   }
 
   async function handleDeleteExercise(id) {
     try {
-      await axios.delete(`/api/exercises/${id}`);
+      await api.delete(`/api/exercises/${id}`);
       setExercises(prev => prev.filter(e => e.id !== id));
     } catch (e) { console.error(e); }
   }
@@ -189,12 +168,6 @@ export default function App() {
         {tab === 'dashboard' && (
           <div className="dashboard-layout">
             <div className="sidebar">
-              <GoogleFitSync
-                accessToken={accessToken}
-                setAccessToken={setAccessToken}
-                activities={activities}
-                setActivities={setActivities}
-              />
               <AddWorkout exercises={exercises} onSubmit={handleAddWorkout} />
             </div>
             <div className="main-content">
