@@ -291,16 +291,26 @@ body {
 @media (max-width: 600px) {
   :root { --header-h: 52px; }
 
+  /* Prevent any component from causing horizontal page scroll */
+  .app { overflow-x: hidden; }
+
   .app-header { display: none; }   /* replaced by bottom nav */
 
   .app-main {
     padding: 12px 12px calc(var(--bottom-nav-h) + 16px);
   }
 
-  .sidebar {
-    grid-template-columns: 1fr;
+  /* Dashboard: show stats BEFORE the add-workout form */
+  .dashboard-layout {
+    display: flex;
+    flex-direction: column;
   }
+  .dashboard-layout .main-content { order: 0; }
+  .dashboard-layout .sidebar       { order: 1; }
 
+  .sidebar { grid-template-columns: 1fr; }
+
+  .form-row { grid-template-columns: 1fr 1fr; }
   .form-row.three-col { grid-template-columns: 1fr 1fr; }
 
   /* Bottom navigation */
@@ -324,25 +334,34 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 2px;
     border: none;
     background: transparent;
     cursor: pointer;
     transition: all 0.15s;
-    padding: 6px 0;
+    padding: 6px 2px;
     color: var(--text-3);
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
+    min-width: 0;
+  }
+
+  .bottom-nav-btn span:not(.bnav-icon) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
   }
 
   .bottom-nav-btn.active { color: var(--accent); }
 
-  .bottom-nav-btn .bnav-icon { font-size: 1.3rem; line-height: 1; }
+  .bottom-nav-btn .bnav-icon { font-size: 1.3rem; line-height: 1; flex-shrink: 0; }
 
   .bottom-nav-theme {
-    flex: 0 0 52px;
+    flex: 0 0 48px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -354,7 +373,7 @@ body {
     color: var(--text-3);
   }
 
-  /* Mobile header strip (logo only) */
+  /* Mobile header strip — shows current tab name */
   .mobile-header {
     display: flex;
     align-items: center;
@@ -368,5 +387,5 @@ body {
   }
 
   .mobile-header .logo-icon { font-size: 1.2rem; }
-  .mobile-header .logo-text { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+  .mobile-header .logo-text { font-size: 1rem; font-weight: 800; color: var(--text); }
 }

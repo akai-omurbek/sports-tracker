@@ -161,7 +161,7 @@ export default function App() {
       {/* Mobile header strip */}
       <div className="mobile-header">
         <span className="logo-icon">⚡</span>
-        <span className="logo-text">Sports Tracker</span>
+        <span className="logo-text">{TABS.find(t => t.id === tab)?.label ?? 'Sports Tracker'}</span>
       </div>
 
       <main className="app-main">

@@ -4,6 +4,8 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 18px 20px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .contrib-header {

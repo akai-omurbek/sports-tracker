@@ -393,6 +393,17 @@
   .stat-row { grid-template-columns: repeat(3, 1fr); }
   .prs-grid { grid-template-columns: repeat(2, 1fr); }
   .rep-tracker-grid { grid-template-columns: 1fr; }
+
+  /* Bigger touch targets for edit/delete */
+  .edit-btn, .del-btn {
+    padding: 8px 10px;
+    font-size: 1rem;
+    min-width: 36px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 420px) {
