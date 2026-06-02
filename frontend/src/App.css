@@ -206,6 +206,9 @@ body {
 .form-group input,
 .form-group select,
 .form-group textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 8px 11px;
   border: 1.5px solid var(--border);
   border-radius: 8px;
@@ -225,6 +228,7 @@ body {
 }
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-row > * { min-width: 0; }
 .form-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
 
 /* ── Shared button styles ── */
