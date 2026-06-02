@@ -1,68 +1,48 @@
 import express from 'express';
-import supabase from '../utils/supabase.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PATH = path.join(__dirname, '../data/templates.json');
+
+function read() {
+  if (!fs.existsSync(PATH)) return [];
+  return JSON.parse(fs.readFileSync(PATH, 'utf-8'));
+}
+function write(data) { fs.writeFileSync(PATH, JSON.stringify(data, null, 2)); }
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  try {
-    const { data, error } = await supabase.from('templates').select('*').order('name');
-    if (error) throw error;
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+router.get('/', (req, res) => res.json(read()));
+
+router.post('/', (req, res) => {
+  const { name, description, exercises } = req.body;
+  if (!name?.trim()) return res.status(400).json({ error: 'Name required' });
+  const templates = read();
+  const t = { id: Date.now().toString(), name: name.trim(), description: description?.trim() || '', exercises: exercises || [] };
+  templates.push(t);
+  write(templates);
+  res.status(201).json(t);
 });
 
-router.post('/', async (req, res) => {
-  try {
-    const { name, description, exercises } = req.body;
-    if (!name?.trim()) return res.status(400).json({ error: 'Name required' });
-
-    const row = {
-      id:          Date.now().toString(),
-      name:        name.trim(),
-      description: description?.trim() || '',
-      exercises:   exercises || [],
-    };
-
-    const { data, error } = await supabase.from('templates').insert(row).select().single();
-    if (error) throw error;
-    res.status(201).json(data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+router.put('/:id', (req, res) => {
+  const templates = read();
+  const idx = templates.findIndex(t => t.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+  const { name, description, exercises } = req.body;
+  templates[idx] = { ...templates[idx], name: name?.trim() || templates[idx].name, description: description?.trim() ?? templates[idx].description, exercises: exercises ?? templates[idx].exercises };
+  write(templates);
+  res.json(templates[idx]);
 });
 
-router.put('/:id', async (req, res) => {
-  try {
-    const { name, description, exercises } = req.body;
-    const updates = {};
-    if (name        !== undefined) updates.name        = name.trim();
-    if (description !== undefined) updates.description = description.trim();
-    if (exercises   !== undefined) updates.exercises   = exercises;
-
-    const { data, error } = await supabase
-      .from('templates')
-      .update(updates)
-      .eq('id', req.params.id)
-      .select()
-      .single();
-    if (error) throw error;
-    if (!data) return res.status(404).json({ error: 'Not found' });
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-router.delete('/:id', async (req, res) => {
-  try {
-    const { error } = await supabase.from('templates').delete().eq('id', req.params.id);
-    if (error) throw error;
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+router.delete('/:id', (req, res) => {
+  const templates = read();
+  const filtered = templates.filter(t => t.id !== req.params.id);
+  if (filtered.length === templates.length) return res.status(404).json({ error: 'Not found' });
+  write(filtered);
+  res.json({ success: true });
 });
 
 export default router;

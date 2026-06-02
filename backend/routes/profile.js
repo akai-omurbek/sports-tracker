@@ -1,30 +1,25 @@
 import express from 'express';
-import supabase from '../utils/supabase.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PROFILE_PATH = path.join(__dirname, '../data/profile.json');
+
+function readProfile() {
+  if (!fs.existsSync(PROFILE_PATH)) return { height: '' };
+  return JSON.parse(fs.readFileSync(PROFILE_PATH, 'utf-8'));
+}
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  try {
-    const { data, error } = await supabase.from('profile').select('*').eq('id', 1).single();
-    if (error && error.code !== 'PGRST116') throw error;
-    res.json(data || { height: '' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/', (req, res) => res.json(readProfile()));
 
-router.put('/', async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('profile')
-      .upsert({ id: 1, ...req.body })
-      .select()
-      .single();
-    if (error) throw error;
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+router.put('/', (req, res) => {
+  const profile = { ...readProfile(), ...req.body };
+  fs.writeFileSync(PROFILE_PATH, JSON.stringify(profile, null, 2));
+  res.json(profile);
 });
 
 export default router;

@@ -14,15 +14,17 @@ import templatesRouter from './routes/templates.js';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
 
+// Serve uploaded photos as static files
+app.use('/photos', express.static(path.join(__dirname, 'data/photos')));
+
+// Routes
 app.use('/api/auth', authRouter);
 app.use('/api/activities', activitiesRouter);
 app.use('/api/googlefit', googleFitRouter);
@@ -33,20 +35,6 @@ app.use('/api/templates', templatesRouter);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// In production (Vercel), serve the React build and handle SPA routing
-if (process.env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '../dist');
-  app.use(express.static(frontendPath));
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
-  });
-}
-
-// Listen only in local dev; Vercel imports this module and uses the exported app
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Backend running on http://localhost:${PORT}`);
-  });
-}
-
-export default app;
+app.listen(PORT, () => {
+  console.log(`Backend running on http://localhost:${PORT}`);
+});

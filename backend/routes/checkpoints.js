@@ -1,133 +1,104 @@
 import express from 'express';
 import multer from 'multer';
-import supabase from '../utils/supabase.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 15 * 1024 * 1024 } });
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const DATA_DIR   = path.join(__dirname, '../data');
+const PHOTOS_DIR = path.join(DATA_DIR, 'photos');
+const JSON_PATH  = path.join(DATA_DIR, 'checkpoints.json');
 
-const BUCKET = 'photos';
+[DATA_DIR, PHOTOS_DIR].forEach(d => { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); });
 
-function toFrontend(row) {
-  if (!row) return row;
-  const { body_fat, _photo_filename, ...rest } = row;
-  return { ...rest, bodyFat: body_fat };
+const storage = multer.diskStorage({
+  destination: (_, __, cb) => cb(null, PHOTOS_DIR),
+  filename:    (_, file, cb) => cb(null, `${Date.now()}${path.extname(file.originalname)}`)
+});
+const upload = multer({ storage, limits: { fileSize: 15 * 1024 * 1024 } });
+
+function readCheckpoints() {
+  if (!fs.existsSync(JSON_PATH)) return [];
+  return JSON.parse(fs.readFileSync(JSON_PATH, 'utf-8'));
 }
 
-async function uploadPhoto(file) {
-  const ext = file.originalname.split('.').pop();
-  const filename = `${Date.now()}.${ext}`;
-  const { error } = await supabase.storage
-    .from(BUCKET)
-    .upload(filename, file.buffer, { contentType: file.mimetype });
-  if (error) throw error;
-  return { filename, url: supabase.storage.from(BUCKET).getPublicUrl(filename).data.publicUrl };
-}
-
-async function deletePhoto(filename) {
-  await supabase.storage.from(BUCKET).remove([filename]);
+function writeCheckpoints(data) {
+  fs.writeFileSync(JSON_PATH, JSON.stringify(data, null, 2));
 }
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('checkpoints')
-      .select('*')
-      .order('date', { ascending: false });
-    if (error) throw error;
-    res.json(data.map(toFrontend));
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+router.get('/', (req, res) => {
+  res.json(readCheckpoints());
 });
 
-router.post('/', upload.single('photo'), async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ error: 'Photo is required' });
-    const { date, weight, bodyFat, chest, waist, hips, arms, notes } = req.body;
-    if (!date) return res.status(400).json({ error: 'Date is required' });
+router.post('/', upload.single('photo'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Photo is required' });
 
-    const { filename, url } = await uploadPhoto(req.file);
+  const { date, weight, bodyFat, chest, waist, hips, arms, notes } = req.body;
+  if (!date) return res.status(400).json({ error: 'Date is required' });
 
-    const row = {
-      id:       Date.now().toString(),
-      date,
-      photo:    url,
-      _photo_filename: filename,
-      weight:   weight   || '',
-      body_fat: bodyFat  || '',
-      chest:    chest    || '',
-      waist:    waist    || '',
-      hips:     hips     || '',
-      arms:     arms     || '',
-      notes:    notes    || '',
-    };
+  const checkpoints = readCheckpoints();
+  const entry = {
+    id: Date.now().toString(),
+    date,
+    photo: req.file.filename,
+    weight:  weight  || '',
+    bodyFat: bodyFat || '',
+    chest:   chest   || '',
+    waist:   waist   || '',
+    hips:    hips    || '',
+    arms:    arms    || '',
+    notes:   notes   || '',
+    createdAt: new Date().toISOString()
+  };
 
-    const { data, error } = await supabase.from('checkpoints').insert(row).select().single();
-    if (error) throw error;
-    res.status(201).json(toFrontend(data));
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  checkpoints.push(entry);
+  writeCheckpoints(checkpoints);
+  res.status(201).json(entry);
 });
 
-router.put('/:id', upload.single('photo'), async (req, res) => {
-  try {
-    const { date, weight, bodyFat, chest, waist, hips, arms, notes } = req.body;
+router.put('/:id', upload.single('photo'), (req, res) => {
+  const checkpoints = readCheckpoints();
+  const idx = checkpoints.findIndex(c => c.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
 
-    const updates = {};
-    if (date    !== undefined) updates.date     = date;
-    if (weight  !== undefined) updates.weight   = weight;
-    if (bodyFat !== undefined) updates.body_fat = bodyFat;
-    if (chest   !== undefined) updates.chest    = chest;
-    if (waist   !== undefined) updates.waist    = waist;
-    if (hips    !== undefined) updates.hips     = hips;
-    if (arms    !== undefined) updates.arms     = arms;
-    if (notes   !== undefined) updates.notes    = notes;
+  const { date, weight, bodyFat, chest, waist, hips, arms, notes } = req.body;
+  const existing = checkpoints[idx];
 
-    if (req.file) {
-      // Delete old photo from storage
-      const { data: existing } = await supabase
-        .from('checkpoints')
-        .select('_photo_filename')
-        .eq('id', req.params.id)
-        .single();
-      if (existing?._photo_filename) await deletePhoto(existing._photo_filename);
-
-      const { filename, url } = await uploadPhoto(req.file);
-      updates.photo = url;
-      updates._photo_filename = filename;
-    }
-
-    const { data, error } = await supabase
-      .from('checkpoints')
-      .update(updates)
-      .eq('id', req.params.id)
-      .select()
-      .single();
-    if (error) throw error;
-    if (!data) return res.status(404).json({ error: 'Not found' });
-    res.json(toFrontend(data));
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (req.file && existing.photo) {
+    const oldPath = path.join(PHOTOS_DIR, existing.photo);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
   }
+
+  checkpoints[idx] = {
+    ...existing,
+    date:    date    ?? existing.date,
+    photo:   req.file ? req.file.filename : existing.photo,
+    weight:  weight  !== undefined ? weight  : existing.weight,
+    bodyFat: bodyFat !== undefined ? bodyFat : existing.bodyFat,
+    chest:   chest   !== undefined ? chest   : existing.chest,
+    waist:   waist   !== undefined ? waist   : existing.waist,
+    hips:    hips    !== undefined ? hips    : existing.hips,
+    arms:    arms    !== undefined ? arms    : existing.arms,
+    notes:   notes   !== undefined ? notes   : existing.notes,
+  };
+
+  writeCheckpoints(checkpoints);
+  res.json(checkpoints[idx]);
 });
 
-router.delete('/:id', async (req, res) => {
-  try {
-    const { data: existing } = await supabase
-      .from('checkpoints')
-      .select('_photo_filename')
-      .eq('id', req.params.id)
-      .single();
-    if (existing?._photo_filename) await deletePhoto(existing._photo_filename);
+router.delete('/:id', (req, res) => {
+  const checkpoints = readCheckpoints();
+  const cp = checkpoints.find(c => c.id === req.params.id);
+  if (!cp) return res.status(404).json({ error: 'Not found' });
 
-    const { error } = await supabase.from('checkpoints').delete().eq('id', req.params.id);
-    if (error) throw error;
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  const photoPath = path.join(PHOTOS_DIR, cp.photo);
+  if (fs.existsSync(photoPath)) fs.unlinkSync(photoPath);
+
+  writeCheckpoints(checkpoints.filter(c => c.id !== req.params.id));
+  res.json({ success: true });
 });
 
 export default router;

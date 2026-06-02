@@ -2,6 +2,8 @@ import React, { useState, useMemo, useRef } from 'react';
 import axios from 'axios';
 import './ProgressTab.css';
 
+const API_PHOTO = 'http://localhost:3001/photos';
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function calcBMI(weight, height) {
@@ -89,7 +91,7 @@ function CheckpointModal({ existing, onSave, onClose }) {
     notes:   existing?.notes   || '',
   });
   const [photoFile, setPhotoFile] = useState(null);
-  const [preview, setPreview] = useState(existing?.photo || null);
+  const [preview, setPreview] = useState(existing?.photo ? `${API_PHOTO}/${existing.photo}` : null);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef();
 
@@ -230,7 +232,7 @@ function CheckpointCard({ cp, height, onEdit, onDelete, onPhotoClick }) {
   return (
     <div className="cp-card">
       <div className="cp-photo-wrap" onClick={() => onPhotoClick(cp)}>
-        <img src={cp.photo} alt={cp.date} className="cp-photo" />
+        <img src={`${API_PHOTO}/${cp.photo}`} alt={cp.date} className="cp-photo" />
         <div className="cp-photo-overlay">🔍 View</div>
       </div>
       <div className="cp-body">
@@ -269,7 +271,7 @@ function Lightbox({ cp, onClose }) {
   return (
     <div className="lightbox-overlay" onClick={onClose}>
       <img
-        src={cp.photo}
+        src={`${API_PHOTO}/${cp.photo}`}
         alt={cp.date}
         className="lightbox-img"
         onClick={e => e.stopPropagation()}
@@ -328,8 +330,8 @@ function CompareView({ checkpoints, height }) {
       </div>
 
       <div className="compare-photos">
-        {left  && <div className="compare-photo-block"><img src={left.photo}  alt="before" /><span>{new Date(left.date  + 'T12:00:00').toLocaleDateString('en', dateOpts)}</span></div>}
-        {right && <div className="compare-photo-block"><img src={right.photo} alt="after"  /><span>{new Date(right.date + 'T12:00:00').toLocaleDateString('en', dateOpts)}</span></div>}
+        {left  && <div className="compare-photo-block"><img src={`${API_PHOTO}/${left.photo}`}  alt="before" /><span>{new Date(left.date  + 'T12:00:00').toLocaleDateString('en', dateOpts)}</span></div>}
+        {right && <div className="compare-photo-block"><img src={`${API_PHOTO}/${right.photo}`} alt="after"  /><span>{new Date(right.date + 'T12:00:00').toLocaleDateString('en', dateOpts)}</span></div>}
       </div>
 
       {(left || right) && (
