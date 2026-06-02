@@ -18,6 +18,7 @@ function parsePath(path) {
 async function gasGet(resource) {
   const resp = await fetch(gasUrl({ resource }));
   const data = await resp.json();
+  if (data && data.error) throw new Error(data.error);
   return { data };
 }
 
@@ -28,6 +29,7 @@ async function gasPost(body) {
     body: JSON.stringify(body),
   });
   const data = await resp.json();
+  if (data && data.error) throw new Error(data.error);
   return { data };
 }
 
