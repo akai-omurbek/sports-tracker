@@ -275,7 +275,7 @@ function uploadPhoto(base64Data, mimeType) {
   );
   const file = folder.createFile(blob);
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  return 'https://drive.google.com/uc?export=view&id=' + file.getId();
+  return 'https://drive.google.com/thumbnail?id=' + file.getId() + '&sz=w1000';
 }
 
 function trashDrivePhoto(url) {
