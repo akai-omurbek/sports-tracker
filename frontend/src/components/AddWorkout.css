@@ -3,22 +3,60 @@
   border-radius: var(--radius);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
-  padding: 18px;
+  overflow: hidden;
 }
 
-.add-workout h2 {
+.add-workout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+}
+
+.add-workout-header h2 {
   font-size: 1rem;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 18px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.add-workout-arrow {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  display: none; /* hidden on desktop */
+}
+
+.add-workout-body {
+  padding: 0 18px 18px;
 }
 
 .add-workout form {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+/* ── Mobile: collapsible ── */
+@media (max-width: 600px) {
+  .add-workout-header {
+    cursor: pointer;
+    user-select: none;
+    padding: 14px 16px;
+  }
+  .add-workout-header:active { background: var(--bg); }
+
+  .add-workout-arrow { display: inline; }
+
+  /* collapsed by default */
+  .add-workout-body { display: none; }
+
+  /* expanded when --open class present */
+  .add-workout--open .add-workout-body {
+    display: block;
+    padding: 0 16px 16px;
+  }
 }
 
 .submit-btn {

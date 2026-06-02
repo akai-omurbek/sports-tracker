@@ -1,1 +1,5 @@
 /* Reset handled in App.css via :root and * selector */
+
+/* Prevent horizontal page scroll globally */
+html { overflow-x: hidden; }
+body { overflow-x: hidden; max-width: 100vw; }

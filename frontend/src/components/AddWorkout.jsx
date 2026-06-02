@@ -10,6 +10,7 @@ function emptyForm() {
 export default function AddWorkout({ exercises, onSubmit }) {
   const [form, setForm] = useState(emptyForm());
   const [submitted, setSubmitted] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,8 +39,12 @@ export default function AddWorkout({ exercises, onSubmit }) {
   const strength = isStrength(form.type);
 
   return (
-    <div className="add-workout">
-      <h2>Add Activity</h2>
+    <div className={`add-workout${open ? ' add-workout--open' : ''}`}>
+      <div className="add-workout-header" onClick={() => setOpen(o => !o)}>
+        <h2>➕ Log Workout</h2>
+        <span className="add-workout-arrow">{open ? '▲' : '▼'}</span>
+      </div>
+      <div className="add-workout-body">
       <form onSubmit={handleSubmit}>
 
         <div className="form-group">
@@ -106,6 +111,7 @@ export default function AddWorkout({ exercises, onSubmit }) {
         <button type="submit" className="submit-btn">Add Activity</button>
         {submitted && <div className="success-message">✓ Activity added!</div>}
       </form>
+      </div>
     </div>
   );
 }

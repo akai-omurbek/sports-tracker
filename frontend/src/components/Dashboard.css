@@ -406,6 +406,17 @@
   }
 }
 
+@media (max-width: 600px) {
+  /* Hide contribution graph on mobile — unreadable at 360px */
+  .contrib-wrap { display: none; }
+
+  /* Hide rep tracker on mobile — secondary info */
+  .rep-tracker-section { display: none; }
+
+  /* Shrink the empty-state box */
+  .empty-state { padding: 24px 16px; }
+}
+
 @media (max-width: 420px) {
   .stat-row { grid-template-columns: 1fr 1fr; }
   .stat-row .stat-tile:last-child { grid-column: 1 / -1; }
