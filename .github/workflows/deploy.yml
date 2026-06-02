@@ -30,6 +30,7 @@ jobs:
         working-directory: frontend
         env:
           REACT_APP_GAS_URL: ${{ secrets.REACT_APP_GAS_URL }}
+          REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

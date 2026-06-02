@@ -1,13 +1,22 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// CONFIGURATION — fill these in before deploying
+// CONFIGURATION — set these in Apps Script → Project Settings → Script Properties
+//   SPREADSHEET_ID  — ID from your Google Sheet URL
+//   DRIVE_FOLDER_ID — ID of the Drive folder for checkpoint photos
+//   API_KEY         — any strong random string; must match REACT_APP_API_KEY
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Paste your Google Spreadsheet ID here (the long string in the sheet URL)
-const SPREADSHEET_ID = '1I-ynV3Z7mFYaisjsrPezM66Sg7i-2kSIOXpsfqfA4Lo';
+function cfg(key) {
+  return PropertiesService.getScriptProperties().getProperty(key);
+}
 
-// Paste the Google Drive folder ID where checkpoint photos will be stored
-// Create a folder in Drive, open it, copy the ID from the URL
-const DRIVE_FOLDER_ID = '1dvxKg4U6io5X9C_RqjSt_P_eA5mXpIoh';
+const MAX_PHOTO_B64_LEN = 20 * 1024 * 1024; // ~15 MB decoded
+
+function checkKey(e) {
+  const expected = cfg('API_KEY');
+  if (!expected) return; // not configured → open (setup mode only)
+  const provided = (e && e.parameter && e.parameter.key) || '';
+  if (provided !== expected) throw new Error('Unauthorized');
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SHEET HELPERS
@@ -21,7 +30,7 @@ const SHEET_HEADERS = {
 };
 
 function getSheet(name) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const ss = SpreadsheetApp.openById(cfg('SPREADSHEET_ID'));
   let sheet = ss.getSheetByName(name);
   if (!sheet) {
     sheet = ss.insertSheet(name);
@@ -266,7 +275,8 @@ function updateProfile(d) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function uploadPhoto(base64Data, mimeType) {
-  const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
+  if (base64Data.length > MAX_PHOTO_B64_LEN) throw new Error('Photo exceeds 15 MB limit');
+  const folder = DriveApp.getFolderById(cfg('DRIVE_FOLDER_ID'));
   const ext = mimeType === 'image/png' ? 'png' : mimeType === 'image/webp' ? 'webp' : 'jpg';
   const blob = Utilities.newBlob(
     Utilities.base64Decode(base64Data),
@@ -351,6 +361,7 @@ function deleteCheckpoint(id) {
 
 function doGet(e) {
   try {
+    checkKey(e);
     const resource = e.parameter.resource;
     let result;
     switch (resource) {
@@ -371,6 +382,7 @@ function doGet(e) {
 
 function doPost(e) {
   try {
+    checkKey(e);
     const body = JSON.parse(e.postData.contents);
     const { _resource, _method, _id, ...data } = body;
     let result;

@@ -1,4 +1,10 @@
 const GAS_URL = process.env.REACT_APP_GAS_URL || '';
+const API_KEY = process.env.REACT_APP_API_KEY || '';
+
+function gasUrl(extra = {}) {
+  const params = new URLSearchParams({ ...extra, ...(API_KEY ? { key: API_KEY } : {}) });
+  return `${GAS_URL}?${params}`;
+}
 
 function parsePath(path) {
   // '/api/activities'      → { resource: 'activities', id: null }
@@ -10,14 +16,13 @@ function parsePath(path) {
 }
 
 async function gasGet(resource) {
-  const url = `${GAS_URL}?resource=${encodeURIComponent(resource)}`;
-  const resp = await fetch(url);
+  const resp = await fetch(gasUrl({ resource }));
   const data = await resp.json();
   return { data };
 }
 
 async function gasPost(body) {
-  const resp = await fetch(GAS_URL, {
+  const resp = await fetch(gasUrl(), {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(body),
