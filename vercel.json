@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm --prefix frontend install && CI=false npm --prefix frontend run build",
+  "buildCommand": "npm --prefix frontend install && BUILD_PATH=../dist CI=false npm --prefix frontend run build",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index.js" }
   ]

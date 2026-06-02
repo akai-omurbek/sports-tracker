@@ -35,9 +35,9 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // In production (Vercel), serve the React build and handle SPA routing
 if (process.env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '../frontend/build');
+  const frontendPath = path.join(__dirname, '../dist');
   app.use(express.static(frontendPath));
-  app.get('*', (req, res) => {
+  app.get('*', (_req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
