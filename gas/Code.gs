@@ -37,7 +37,17 @@ function sheetToObjects(sheet) {
   const headers = data[0];
   return data.slice(1).map(row => {
     const obj = {};
-    headers.forEach((h, i) => { obj[h] = row[i]; });
+    headers.forEach((h, i) => {
+      const v = row[i];
+      if (v instanceof Date) {
+        // 'date' columns → YYYY-MM-DD; timestamps (createdAt) → ISO string
+        obj[h] = h === 'date'
+          ? Utilities.formatDate(v, 'UTC', 'yyyy-MM-dd')
+          : v.toISOString();
+      } else {
+        obj[h] = v;
+      }
+    });
     return obj;
   });
 }
