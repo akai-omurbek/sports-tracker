@@ -1,0 +1,62 @@
+.add-workout {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.add-workout h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.add-workout form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.submit-btn {
+  padding: 11px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 4px;
+  letter-spacing: 0.2px;
+}
+
+.submit-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.success-message {
+  color: var(--green);
+  font-weight: 600;
+  text-align: center;
+  padding: 10px;
+  background: #dcfce7;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  animation: fadeSlide 0.25s ease;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

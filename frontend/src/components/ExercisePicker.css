@@ -1,0 +1,120 @@
+.exercise-picker {
+  position: relative;
+}
+
+.picker-input {
+  width: 100%;
+  padding: 9px 32px 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.picker-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+}
+
+.picker-input.has-value {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.picker-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 3px 5px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.picker-clear:hover { color: var(--red); }
+
+.picker-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 200;
+  overflow: hidden;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.picker-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--border);
+}
+
+.picker-option:last-child { border-bottom: none; }
+
+.picker-option.highlighted,
+.picker-option:hover {
+  background: var(--accent-light);
+}
+
+.picker-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.picker-name mark {
+  background: none;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.picker-cat {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.cat-push    { background: #fde8d8; color: #c2410c; }
+.cat-pull    { background: #dbeafe; color: #1d4ed8; }
+.cat-legs    { background: #dcfce7; color: #15803d; }
+.cat-arms    { background: #fce7f3; color: #be185d; }
+.cat-core    { background: #fef9c3; color: #a16207; }
+.cat-cardio  { background: #e0f2fe; color: #0369a1; }
+.cat-other   { background: var(--bg); color: var(--text-3); }
+
+.picker-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 0.88rem;
+}
+
+/* Dark mode overrides for category chips */
+[data-theme="dark"] .cat-push  { background: #4a1a0a; color: #fb923c; }
+[data-theme="dark"] .cat-pull  { background: #0a1a3a; color: #60a5fa; }
+[data-theme="dark"] .cat-legs  { background: #0a2a1a; color: #4ade80; }
+[data-theme="dark"] .cat-arms  { background: #3a0a1a; color: #f472b6; }
+[data-theme="dark"] .cat-core  { background: #2a2000; color: #facc15; }
+[data-theme="dark"] .cat-cardio{ background: #002a3a; color: #38bdf8; }

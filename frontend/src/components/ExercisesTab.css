@@ -1,0 +1,365 @@
+.exercises-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Toolbar ── */
+.ex-toolbar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ex-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+}
+
+.ex-search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.ex-search {
+  width: 100%;
+  padding: 9px 32px 9px 32px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.ex-search:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.ex-clear-search {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.ex-cat-filter {
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.ex-cat-filter:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.ex-add-btn {
+  padding: 9px 18px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.ex-add-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(108,99,255,0.3);
+}
+
+/* ── Add/Edit form ── */
+.ex-form {
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+
+.ex-form-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.ex-form-fields {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.ex-input {
+  flex: 2;
+  min-width: 160px;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.ex-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.ex-select {
+  flex: 1;
+  min-width: 110px;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.ex-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.ex-instructions-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  resize: vertical;
+  margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+
+.ex-instructions-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.ex-form-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.ex-save-btn {
+  padding: 9px 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ex-save-btn:hover {
+  background: var(--accent-dark);
+}
+
+.ex-cancel-btn {
+  padding: 9px 16px;
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ex-cancel-btn:hover {
+  border-color: var(--text-2);
+  background: var(--bg);
+}
+
+/* ── Count ── */
+.ex-count {
+  font-size: 0.82rem;
+  color: var(--text-3);
+  font-weight: 500;
+  padding-left: 4px;
+}
+
+/* ── Groups ── */
+.ex-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.ex-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.ex-group-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-2);
+}
+
+.ex-group-count {
+  background: var(--accent);
+  color: white;
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ex-group-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Exercise row ── */
+.ex-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  transition: background 0.1s;
+}
+
+.ex-row:last-child { border-bottom: none; }
+.ex-row:hover { background: var(--surface2); }
+
+.ex-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.ex-cat {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+  background: var(--accent-light);
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+
+.ex-row-wrap { border-bottom: 1px solid var(--border); }
+.ex-row-wrap:last-child { border-bottom: none; }
+.ex-row { border-bottom: none; }
+
+.ex-instructions {
+  padding: 10px 20px 14px;
+  font-size: 0.85rem;
+  color: var(--text-2);
+  line-height: 1.6;
+  background: var(--surface2);
+  white-space: pre-wrap;
+}
+
+.ex-inline-edit {
+  padding: 4px 8px;
+  background: var(--surface2);
+}
+
+.ex-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.ex-info-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 5px 7px;
+  border-radius: 6px;
+  transition: all 0.12s;
+  opacity: 0.6;
+}
+
+.ex-info-btn:hover, .ex-info-btn.active { opacity: 1; background: var(--accent-light); }
+
+.ex-edit-btn, .ex-del-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 5px 7px;
+  border-radius: 6px;
+  transition: all 0.12s;
+  color: var(--text-3);
+}
+
+.ex-edit-btn:hover { background: var(--accent-light); }
+.ex-del-btn:hover  { background: #fee2e2; color: var(--red); }
+
+/* ── Empty ── */
+.ex-empty {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-3);
+}
+
+.ex-empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.ex-empty p { font-size: 0.9rem; }
+
+@media (max-width: 600px) {
+  .ex-toolbar { flex-direction: column; align-items: stretch; padding: 12px; }
+  .ex-search-wrap { width: 100%; }
+  .ex-cat-filter { width: 100%; }
+  .ex-add-btn { width: 100%; }
+  .ex-form-fields { flex-direction: column; }
+  .ex-input, .ex-select { width: 100%; }
+}

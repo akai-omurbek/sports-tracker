@@ -1,0 +1,372 @@
+:root {
+  --accent: #6c63ff;
+  --accent-dark: #574fd6;
+  --accent-light: #ede9ff;
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface2: #f9f9fb;
+  --border: #e8e8ed;
+  --text: #1a1a2e;
+  --text-2: #555570;
+  --text-3: #9999b0;
+  --green: #22c55e;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --orange: #f97316;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.10);
+  --badge-blue-bg: #dbeafe; --badge-blue-text: #1d4ed8;
+  --badge-green-bg: #dcfce7; --badge-green-text: #15803d;
+  --header-h: 56px;
+  --bottom-nav-h: 60px;
+}
+
+[data-theme="dark"] {
+  --accent: #7c73ff;
+  --accent-dark: #6c63ff;
+  --accent-light: #1e1a4e;
+  --bg: #0d0d1a;
+  --surface: #13131f;
+  --surface2: #1a1a2e;
+  --border: #2a2a42;
+  --text: #e8e8f4;
+  --text-2: #9090b8;
+  --text-3: #55557a;
+  --green: #4ade80;
+  --red: #f87171;
+  --blue: #60a5fa;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.4);
+  --badge-blue-bg: #1e2f5a; --badge-blue-text: #93c5fd;
+  --badge-green-bg: #0f2a1a; --badge-green-text: #6ee7b7;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow);
+  height: var(--header-h);
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.logo-icon { font-size: 1.3rem; }
+.logo-text  { font-size: 1rem; font-weight: 700; color: var(--text); letter-spacing: -0.3px; white-space: nowrap; }
+
+/* ── Tab nav ── */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 2px;
+  background: var(--bg);
+  padding: 3px;
+  border-radius: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tab-nav::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tab-btn:hover  { background: var(--surface); color: var(--text); }
+.tab-btn.active { background: var(--surface); color: var(--accent); font-weight: 700; box-shadow: var(--shadow); }
+
+.tab-icon  { font-size: 0.95rem; }
+.tab-label { font-size: 0.85rem; }
+
+.theme-toggle {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover { border-color: var(--accent); background: var(--accent-light); }
+
+/* ── Main content area ── */
+.app-main {
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 20px 28px;
+  width: 100%;
+}
+
+/* ── Dashboard layout ── */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: calc(var(--header-h) + 20px);
+  max-height: calc(100vh - var(--header-h) - 40px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 4px;
+}
+
+.sidebar::-webkit-scrollbar       { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.card h2 { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+
+/* ── Form elements (global) ── */
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 8px 11px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+}
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ── Shared button styles ── */
+.btn-save {
+  padding: 10px 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-save:hover:not(:disabled) { background: var(--accent-dark); transform: translateY(-1px); }
+.btn-save:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-cancel {
+  padding: 10px 18px;
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.btn-cancel:hover { border-color: var(--text-2); background: var(--bg); }
+
+/* ── Mobile-only elements (hidden by default) ── */
+.bottom-nav  { display: none; }
+.mobile-header { display: none; }
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ══════════════════════════════════════════════════ */
+
+/* ── Tablet: sidebar stacks above content ── */
+@media (max-width: 1050px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
+/* ── Narrow tablet: hide tab labels ── */
+@media (max-width: 860px) {
+  .tab-label { display: none; }
+  .tab-btn   { padding: 7px 10px; }
+  .logo-text { display: none; }
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  :root { --header-h: 52px; }
+
+  .app-header { display: none; }   /* replaced by bottom nav */
+
+  .app-main {
+    padding: 12px 12px calc(var(--bottom-nav-h) + 16px);
+  }
+
+  .sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row.three-col { grid-template-columns: 1fr 1fr; }
+
+  /* Bottom navigation */
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-nav-h);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    z-index: 200;
+    align-items: stretch;
+  }
+
+  .bottom-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    padding: 6px 0;
+    color: var(--text-3);
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .bottom-nav-btn.active { color: var(--accent); }
+
+  .bottom-nav-btn .bnav-icon { font-size: 1.3rem; line-height: 1; }
+
+  .bottom-nav-theme {
+    flex: 0 0 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-left: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--text-3);
+  }
+
+  /* Mobile header strip (logo only) */
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    gap: 8px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .mobile-header .logo-icon { font-size: 1.2rem; }
+  .mobile-header .logo-text { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+}
